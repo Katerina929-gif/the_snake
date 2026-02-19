@@ -1,23 +1,28 @@
-import pygame
+"""Программа реализует классическую игру 'Змейка' на библиотеке Pygame."""
 from random import choice, randint
 
+import pygame
+
+# Константа для размеров поля и сетки:
 SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
 GRID_SIZE = 20
 GRID_WIDTH = SCREEN_WIDTH // GRID_SIZE
 GRID_HEIGHT = SCREEN_HEIGHT // GRID_SIZE
 
+# Направление движения:
 UP = (0, -1)
 DOWN = (0, 1)
 LEFT = (-1, 0)
 RIGHT = (1, 0)
 
+# Цвет фона - черный:
 BOARD_BACKGROUND_COLOR = (0, 0, 0)
 BORDER_COLOR = (93, 216, 228)
 APPLE_COLOR = (255, 0, 0)
 SNAKE_COLOR = (0, 255, 0)
 SPEED = 20
 
-
+# Настройки игрового окна:
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
 pygame.display.set_caption('Змейка')
 clock = pygame.time.Clock()
@@ -25,6 +30,7 @@ clock = pygame.time.Clock()
 
 class GameObject:
     """Базовый класс для игровых объектов."""
+
     def __init__(self) -> None:
         """Инициализация базовых атрибутов объекта."""
         self.position = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
@@ -37,6 +43,7 @@ class GameObject:
 
 class Apple(GameObject):
     """Класс, описывающий яблоко."""
+
     def __init__(self, snake_positions=None):
         """Инициализация яблока с проверкой позиции змейки."""
         super().__init__()
@@ -62,6 +69,7 @@ class Apple(GameObject):
 
 class Snake(GameObject):
     """Класс, описывающий змейку и её поведение."""
+
     def __init__(self):
         """Инициализация начального состояния змейки."""
         super().__init__()
@@ -84,6 +92,7 @@ class Snake(GameObject):
         new_position = ((cur[0] + (x * GRID_SIZE)) % SCREEN_WIDTH,
                         (cur[1] + (y * GRID_SIZE)) % SCREEN_HEIGHT)
         """Проверка на столкновение с собой."""
+
         if len(self.positions) > 2 and new_position in self.positions[2:]:
             self.reset()
         else:
@@ -141,6 +150,7 @@ def main():
         snake.update_direction()
         snake.move()
         """Проверка: съела ли змея яблоко."""
+
         if snake.positions[0] == apple.position:
             snake.length += 1
             apple.randomize_position(snake.positions)
