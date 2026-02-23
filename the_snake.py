@@ -1,7 +1,7 @@
 """Программа реализует классическую игру 'Змейка' на библиотеке Pygame."""
 
 from random import choice, randint
-from typing import List, Optional
+from typing import List, Optional, Tuple, Union
 
 import pygame as pg
 
@@ -31,6 +31,7 @@ SNAKE_COLOR: Color = (0, 255, 0)
 # Скорость:
 SPEED: int = 20
 
+COLOR = Union[Tuple[int, int, int], str, pg.Color]
 # Настройки игрового окна:
 screen: pg.Surface = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
 pg.display.set_caption('Змейка')
@@ -40,10 +41,10 @@ clock: pg.time.Clock = pg.time.Clock()
 class GameObject:
     """Базовый класс для игровых объектов."""
 
-    def __init__(self) -> None:
+    def __init__(self, body_color: COLOR = (255, 255, 255)) -> None:
         """Инициализация базовых атрибутов объекта."""
         self.position: Point = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
-        self.body_color: Optional[Color] = None
+        self.body_color = body_color
 
     def draw(self) -> None:
         """Метод для отрисовки объектов."""
@@ -53,9 +54,10 @@ class GameObject:
 class Apple(GameObject):
     """Класс, описывающий яблоко."""
 
-    def __init__(self, snake_positions: Optional[List[Point]] = None) -> None:
+    def __init__(self, snake_positions: Optional[List[Point]] = None,
+                 body_color: COLOR = APPLE_COLOR) -> None:
         """Инициализация яблока с проверкой позиции змейки."""
-        super().__init__()
+        super().__init__(body_color=body_color)
         self.body_color = APPLE_COLOR
         if snake_positions is None:
             snake_positions = [self.position]
@@ -72,17 +74,16 @@ class Apple(GameObject):
     def draw(self) -> None:
         """Отрисовывает яблоко на экране."""
         rect = pg.Rect(self.position, (GRID_SIZE, GRID_SIZE))
-        color = self.body_color if self.body_color is not None else (255, 0, 0)
-        pg.draw.rect(screen, color, rect)
+        pg.draw.rect(screen, self.body_color, rect)
         pg.draw.rect(screen, BORDER_COLOR, rect, 1)
 
 
 class Snake(GameObject):
     """Класс, описывающий змейку и её поведение."""
 
-    def __init__(self) -> None:
+    def __init__(self, body_color: COLOR = SNAKE_COLOR) -> None:
         """Инициализация начального состояния змейки."""
-        super().__init__()
+        super().__init__(body_color=body_color)
         self.length: int = 1
         self.positions: List[Point] = [self.position]
         self.direction: Point = RIGHT
@@ -117,7 +118,7 @@ class Snake(GameObject):
 
     def draw(self) -> None:
         """Отрисовывает змейку, выделяя голову."""
-        for position in self.positions[:-1]:
+        for position in self.positions:
             rect = pg.Rect(position, (GRID_SIZE, GRID_SIZE))
             pg.draw.rect(screen, self.body_color, rect)
             pg.draw.rect(screen, BORDER_COLOR, rect, 1)
