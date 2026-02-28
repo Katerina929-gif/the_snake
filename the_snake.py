@@ -23,6 +23,7 @@ LEFT: Point = (-1, 0)
 RIGHT: Point = (1, 0)
 
 # Цвет фона - черный:
+DEFAULT_COLOR = (255, 255, 255)
 BOARD_BACKGROUND_COLOR: Color = (0, 0, 0)
 BORDER_COLOR: Color = (93, 216, 228)
 APPLE_COLOR: Color = (255, 0, 0)
@@ -41,7 +42,7 @@ clock: pg.time.Clock = pg.time.Clock()
 class GameObject:
     """Базовый класс для игровых объектов."""
 
-    def __init__(self, body_color: COLOR = (255, 255, 255)) -> None:
+    def __init__(self, body_color: COLOR = DEFAULT_COLOR) -> None:
         """Инициализация базовых атрибутов объекта."""
         self.position: Point = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
         self.body_color = body_color
@@ -54,14 +55,14 @@ class GameObject:
 class Apple(GameObject):
     """Класс, описывающий яблоко."""
 
-    def __init__(self, snake_positions: Optional[List[Point]] = None,
+    def __init__(self, occupied_positions: Optional[List[Point]] = None,
                  body_color: COLOR = APPLE_COLOR) -> None:
         """Инициализация яблока с проверкой позиции змейки."""
         super().__init__(body_color=body_color)
         self.body_color = APPLE_COLOR
-        if snake_positions is None:
-            snake_positions = [self.position]
-        self.randomize_position(snake_positions)
+        if occupied_positions is None:
+            occupied_positions = [self.position]
+        self.randomize_position(occupied_positions)
 
     def randomize_position(self, occupied_position: List[Point]) -> None:
         """Устанавливает случайную позицию яблока на поле."""
